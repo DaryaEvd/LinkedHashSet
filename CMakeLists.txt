@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_executable(src
         linkedhashset.cpp
+        student.cpp
         main.cpp)
 
 

@@ -2,6 +2,7 @@
 
 int main() {
     linkedhs set1;
+    
     set1.insert(element(19, "Dasha"));
 
     set1.insert(element(19, "Dasha"));

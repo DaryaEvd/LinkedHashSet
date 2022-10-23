@@ -1,42 +1,15 @@
 #include "linkedhashset.hpp"
 
 #include <initializer_list>
-#include <iostream>
-#include <math.h>
 
 #define DEFAULT_LOAD_FACTOR 0.75
 #define DEFAULT_VECTOR_CAPACITY 16
 
-student::student()
-        : age_(0), name_("null") {}
-
-student::student(unsigned age, std::string name)
-        : age_(age), name_(name) {}
-
-bool student::operator==(const student &other) const {
-    return this->age_ == other.age_ && this->name_ == other.name_;
-}
-
-bool student::operator!=(const student &other) const {
-    return !(*this == other);
-}
-
-long long student::hash() const {
-    long long h = 0;
-    int p = 31;
-    for (char c: name_) {
-        h += (c - 'a' + 1) * p;
-        p *= 31;
-    }
-    h = p * h + age_;
-    return (long long) abs(h);
-}
-
 linkedhs::node::node()
-        : prev(nullptr), next(nullptr) {}
+    : prev(nullptr), next(nullptr) {}
 
 linkedhs::iterator::iterator(linkedhs::node *node)
-        : ptrNode_(node) {}
+    : ptrNode_(node) {}
 
 element linkedhs::iterator::operator*() {
     return ptrNode_->data;
@@ -110,8 +83,8 @@ linkedhs::iterator linkedhs::find(const element &e) const {
 }
 
 linkedhs::linkedhs()
-        : capacityVector(DEFAULT_VECTOR_CAPACITY),
-          head_(nullptr), tail_(nullptr), lengthList_(0) {
+    : capacityVector(DEFAULT_VECTOR_CAPACITY),
+        head_(nullptr), tail_(nullptr), lengthList_(0) {
 
     vect.resize(capacityVector);
 }
