@@ -1,3 +1,4 @@
+// CR: include guards
 #include "student.hpp"
 
 #include <vector>
@@ -15,6 +16,8 @@ class linkedhs {
 
     } node;
 
+    // CR: private
+    // CR: store element * instead
     std::vector <element> vect;
     size_t capacityVector;
 
@@ -87,6 +90,7 @@ public:
         returns true if the list has an element with such hash
         returns false if the list hasn't an element with such hash
     */
+   // CR: move to private
     bool containsHash(const long long hash) const;
 
     /*  returns true if the element e exist in the list

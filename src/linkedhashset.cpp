@@ -1,10 +1,10 @@
 #include "linkedhashset.hpp"
 
-#include <initializer_list>
-
+// CR: add as static const fields to linkedhset.hpp
 #define DEFAULT_LOAD_FACTOR 0.75
 #define DEFAULT_VECTOR_CAPACITY 16
 
+// CR: move to header
 linkedhs::node::node()
     : prev(nullptr), next(nullptr) {}
 
@@ -97,6 +97,7 @@ linkedhs::~linkedhs() {
     }
 }
 
+// CR: use insert inside
 linkedhs::linkedhs(const linkedhs &other)
     :   capacityVector(other.capacityVector),
         head_(nullptr), tail_(nullptr){
@@ -132,6 +133,7 @@ linkedhs::linkedhs(const linkedhs &other)
     }
 }
 
+// CR: why default?
 linkedhs &linkedhs::operator=(const linkedhs &other) = default;
 
 bool linkedhs::containsHash(const long long hash) const {
@@ -140,6 +142,7 @@ bool linkedhs::containsHash(const long long hash) const {
 
 bool linkedhs::contains(const element &e) const {
     iterator tmp = find(e);
+    // CR: compare with end()
     return (tmp.ptrNode_ != nullptr);
 }
 
@@ -165,9 +168,11 @@ void linkedhs::addToList(const element &e) {
     }
 }
 
+// CR: do not store the refence
 bool linkedhs::insert(const element &e) {
     if (lengthList_ >= capacityVector * DEFAULT_LOAD_FACTOR) {
         capacityVector = lengthList_ * 2;
+        // CR: move elements during resize
         vect.resize(capacityVector);
     }
     size_t hashElem = e.hash() % capacityVector;
@@ -201,6 +206,9 @@ bool linkedhs::remove(const element &e) {
     return false;
 }
 
+// CR: struct entry:
+// - element
+// - node_ *
 bool linkedhs::deleteNodeFromList(const element &e) {
     iterator current = find(e);
     if (current.ptrNode_->next == nullptr) {//last elem 
@@ -237,6 +245,30 @@ void linkedhs::swap(linkedhs &other) {
     std::swap(this->tail_, other.tail_);
 }
 
+/*
+linkedhs hs1;
+hs1.insert(a1);
+hs1.insert(a2);
+
+linkedhs hs2;
+hs2.insert(a2);
+hs2.insert(a1);
+
+hs2 == hs1 // returns true
+----------
+
+linkedhs hs1;
+for (1000 elements) {
+  hs1.insert(e);
+}
+for (999 elements) {
+  hs1.remove(e);
+}
+
+linkedhs hs2;
+hs2.insert(e);
+*/
+// CR: implement as O(n)
 bool linkedhs::operator==(const linkedhs &other) const{
     if(this->vect == other.vect &&
         this->capacityVector == other.capacityVector &&
@@ -253,11 +285,11 @@ bool linkedhs::operator!=(const linkedhs &other) const{
 }
 
 size_t linkedhs::size() const {
-    return (lengthList_);
+    return lengthList_;
 }
 
 bool linkedhs::empty() const {
-    return (lengthList_ == 0);
+    return lengthList_ == 0;
 }
 
 void linkedhs::clear(){
@@ -267,6 +299,7 @@ void linkedhs::clear(){
         curr = curr->next;
         delete tmp;
     }
+    // CR: clear vect
 
     head_ = nullptr;
     tail_ = nullptr;
