@@ -1,4 +1,7 @@
-// CR: include guards
+#ifndef LINKED_HASH_SET_
+#define LINKED_HASH_SET_
+// CR: include guards DONE
+
 #include "student.hpp"
 
 #include <vector>
@@ -12,18 +15,36 @@ class linkedhs {
         node *next;
 
         /*default constructor for struct node*/
-        node();
+        node (): prev(nullptr), next(nullptr) {}
+        //node (const node &other);
 
     } node;
 
-    // CR: private
-    // CR: store element * instead
-    std::vector <element> vect;
-    size_t capacityVector;
+    //////////// ????????????
+    typedef struct entry{
+        entry *node; // = nullptr; // ???
+        element elem;
+
+        // entry();
+        entry(const entry &other)
+            : node(other.node), elem(other.elem){};
+        
+        // ~entry();
+        bool operator==(const entry &other);
+    } entry;
+
+private:
+    // CR: private DONE
+    // CR: store element * instead 
+    std::vector <element*> vect_;
+    size_t capacityVector_;
 
     node *head_;
     node *tail_;
-    size_t lengthList_;
+    size_t insertedElements_;
+
+    constexpr static double DEFAULT_LOAD_FACTOR_ = 0.75;
+    constexpr static size_t DEFAULT_VECTOR_CAPACITY_ = 16;
 
 public:
 
@@ -65,86 +86,98 @@ public:
         node *ptrNode_;
     };
 
-    /*returns a pointer to the first element in the list*/
-    iterator begin();
+    // CR: move to private DONE
+    private:
+        /*returns hash of the element*/
+        long long countHash(const element &e) const;
 
-     /*returns a pointer to the last element in the list*/
-    iterator end();
-
-    /*returns an iterator pointing to the node with e */
-    iterator find(const element &e) const;
-
-    /*default constructor for linkedhs*/
-    linkedhs();
-
-    /*destructor*/
-    ~linkedhs();
-
-    /*copy constructor for linkedhs*/
-    linkedhs(const linkedhs &other);
-
-    /*assignment operator for linkedhs */
-    linkedhs &operator=(const linkedhs &other);
+    public:
     
-    /*  
-        returns true if the list has an element with such hash
-        returns false if the list hasn't an element with such hash
-    */
-   // CR: move to private
-    bool containsHash(const long long hash) const;
+        /*returns a pointer to the first element in the list*/
+        iterator begin() const;
 
-    /*  returns true if the element e exist in the list
-        returns false if the element e doesn't exist in the list
-    */
-    bool contains(const element &e) const;
+        /*returns a pointer to the last element in the list*/
+        iterator end() const;
 
-    /*adds element e to the list*/
-    void addToList(const element &e);
+        /*  if node is found
+            returns an iterator pointing to the node with e 
+ 
+        */
+        iterator find(const element &e) const;
 
-    /*  inserts element e to the list 
-        returns true if e was added to the list
-        returns false if e already exists in the list
-    */
-    bool insert(const element &e);
+        /*default constructor for linkedhs*/
+        linkedhs();
 
-    /*  removes element e from the list 
-        returns true if e was deleted to the list
-        returns false if e doesn't exist in the list
-    */
-    bool remove(const element &e);
+        /*destructor*/
+        ~linkedhs();
 
-    /*  deletes a node from the list
-        returns true if the node was deleted
-        returns false if the node wasn't deleted
-    */
-    bool deleteNodeFromList(const element&e);   
+        /*copy constructor for linkedhs*/
+        linkedhs(const linkedhs &other);
 
-    /* swaps the linked hash sets*/
-    void swap(linkedhs &other);
+        /*assignment operator for linkedhs */
+        linkedhs &operator=(const linkedhs &other);
+        
+        /*  returns true if the element e exist in the list
+            returns false if the element e doesn't exist in the list
+        */
+        bool contains(const element &e) const;
+
+        
+        /*adds element e to the end of the list*/
+        void addToTheEndOfList(const element &e);
+
+        /*  inserts element e to the list 
+            returns true if e was added to the list
+            returns false if e already exists in the list
+        */
+        bool insert(const element &e);
+
+        /*
+            increments capacity
+        */
+        void resize();
+
+        /*  removes element e from the list 
+            returns true if e was deleted to the list
+            returns false if e doesn't exist in the list
+        */
+        bool remove(const element &e);
+
+        /*  deletes a node from the list
+            returns true if the node was deleted
+            returns false if the node wasn't deleted
+        */
+        bool deleteNodeFromList(const element&e);   
+
+        /* swaps the linked hash sets*/
+        void swap(linkedhs &other);
+        
+        /*  сomparison operator==
+            returns true if objects are equal in the list
+            returns false if objects aren't equal in the list
+        */
+        bool operator==(const linkedhs &other) const;
+
+        /*  сomparison operator!=
+            returns true if objects aren't equal in the list
+            returns false if objects are equal in the list
+        */ 
+        bool operator!=(const linkedhs &other) const;
     
-    /*  сomparison operator==
-        returns true if objects are equal in the list
-        returns false if objects aren't equal in the list
-    */
-    bool operator==(const linkedhs &other) const;
+        /* returns the number of elements in the list */
+        size_t size() const;
+        
+        /*  returns true if the list is empty
+            returns false if the list isn't empty
+        */
+        bool empty() const;    
+        
+        /* removes all of the elements from the set*/
+        void clear();
 
-    /*  сomparison operator!=
-        returns true if objects aren't equal in the list
-        returns false if objects are equal in the list
-    */ 
-    bool operator!=(const linkedhs &other) const;
-   
-    /* returns the number of elements in the list */
-    size_t size() const;
-    
-    /*  returns true if the list is empty
-        returns false if the list isn't empty
-    */
-    bool empty() const;    
-    
-    /* removes all of the elements from the set*/
-    void clear();
+        /* prints the set*/
+        void print();
 
-    /* prints the set*/
-    void print();
 };
+
+#endif //LINKED_HASH_SET_
