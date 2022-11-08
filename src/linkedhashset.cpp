@@ -154,16 +154,15 @@ linkedhs::iterator linkedhs::find(const element &e) const {
     auto iter = vect_.begin() + hash;
     for (iter; iter < vect_.end(); iter++){
         if( *iter == vect_[hash] && *iter == &e){
+          // CR: return iterator(*iter);
             return iter; // can't return :(
         }
-    }        
+    }
     return  iter; // can't return :(
 }
 
 bool linkedhs::contains(const element &e) const {
-    iterator tmp = find(e);
-    // CR: compare with end() DONE
-    return (tmp != end());
+    return find(e) != end();
 }
 
 // CR: use insert inside DONE       
@@ -199,8 +198,10 @@ void linkedhs::resize(){
     // }
 }
 
-void linkedhs::addToTheEndOfList(const element &e) {
+void linkedhs::addToTheEndOfList(element * e) {
+    // CR: node(e, ...);
     node *tmp = new node();
+    // CR: use ctor with params
     tmp->data = e; //add elem to list 
     tmp->next = nullptr;
     tmp->prev = nullptr;
@@ -210,6 +211,7 @@ void linkedhs::addToTheEndOfList(const element &e) {
         tail_ = tmp;
     }
     else{ 
+        // CR: simplify
         tail_->next = tmp;
         node *lastElem = tail_; //store a pointer to the last elem in the list
         tail_ = tmp;
@@ -218,23 +220,23 @@ void linkedhs::addToTheEndOfList(const element &e) {
 }
 
 bool linkedhs::insert(const element &e){
-    if (insertedElements_ >= capacityVector_ * DEFAULT_LOAD_FACTOR_) {
-        //CR: move elements during resize DONE
-        resize();
-    }
-    size_t hashElem = countHash(e);  
     if (contains(e)) { 
         return false;
     } 
-
-    if(!contains(e)){
-        while(vect_[hashElem] != nullptr){
-            hashElem++;
-        }
-        *vect_[hashElem] = e;
-        addToTheEndOfList(e);
-        insertedElements_++;
+    if (insertedElements_ >= capacityVector_ * DEFAULT_LOAD_FACTOR_) {
+        resize();
     }
+    size_t hashElem = countHash(e);  
+
+    while(vect_[hashElem]){
+      // CR: handle out of bounds
+        hashElem++;
+    }
+    element * toInsert = new element(e);
+    vect_[hashElem] = toInsert;
+    // *vect_[hashElem] = e;
+    addToTheEndOfList(toInsert);
+    insertedElements_++;
     return true;
 }
 
@@ -270,12 +272,14 @@ bool linkedhs::operator==(const linkedhs &other) const{
     }
 
     for (auto it = this->begin(); it != this->end(); it++){
+        // CR: copy?
         element e = *it;
         if(!other.contains(e)){
             return false;
         }
     }
 
+    // CR: do we need it?
     for (auto it = other.begin(); it != other.end(); it++){
         element e = *it;
         if(!this->contains(e)){
@@ -286,6 +290,7 @@ bool linkedhs::operator==(const linkedhs &other) const{
 }
 
 linkedhs &linkedhs::operator=(const linkedhs &other){
+    // CR: *this != other
     capacityVector_ = other.capacityVector_;
     insertedElements_ = other.insertedElements_;
 

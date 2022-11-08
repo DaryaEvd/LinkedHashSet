@@ -9,6 +9,7 @@
 typedef student element;
 
 class linkedhs {
+    // CR: typedef?
     typedef struct node{
         element data;
         node *prev;
@@ -34,9 +35,9 @@ class linkedhs {
     } entry;
 
 private:
-    // CR: private DONE
-    // CR: store element * instead 
+    // CR: store node * instead 
     std::vector <element*> vect_;
+    // CR: use vect_.capacity() instead
     size_t capacityVector_;
 
     node *head_;
@@ -87,11 +88,11 @@ public:
     };
 
     // CR: move to private DONE
-    private:
+  private:
         /*returns hash of the element*/
         long long countHash(const element &e) const;
 
-    public:
+  public:
     
         /*returns a pointer to the first element in the list*/
         iterator begin() const;
