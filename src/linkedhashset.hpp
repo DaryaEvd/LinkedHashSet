@@ -1,6 +1,5 @@
 #ifndef LINKED_HASH_SET_
 #define LINKED_HASH_SET_
-// CR: include guards DONE
 
 #include "student.hpp"
 
@@ -9,46 +8,21 @@
 typedef student element;
 
 class linkedhs {
-    // CR: typedef?
-    typedef struct node{
+    
+    struct node {
         element data;
         node *prev;
         node *next;
 
         /*default constructor for struct node*/
-        node (): prev(nullptr), next(nullptr) {}
-        //node (const node &other);
+        node() : prev(nullptr), next(nullptr) {}
 
-    } node;
-
-    //////////// ????????????
-    typedef struct entry{
-        entry *node; // = nullptr; // ???
-        element elem;
-
-        // entry();
-        entry(const entry &other)
-            : node(other.node), elem(other.elem){};
-        
-        // ~entry();
-        bool operator==(const entry &other);
-    } entry;
-
-private:
-    // CR: store node * instead 
-    std::vector <element*> vect_;
-    // CR: use vect_.capacity() instead
-    size_t capacityVector_;
-
-    node *head_;
-    node *tail_;
-    size_t insertedElements_;
-
-    constexpr static double DEFAULT_LOAD_FACTOR_ = 0.75;
-    constexpr static size_t DEFAULT_VECTOR_CAPACITY_ = 16;
+        /*constructor for struct node with paremeters*/
+        node(element dataNew)
+            : data(dataNew), prev(nullptr), next(nullptr){};
+    };
 
 public:
-
     class iterator {
     public:
         /*constructor with parameter for iterator*/
@@ -66,7 +40,7 @@ public:
         iterator operator++();
 
         /*postfix decrement operator for iterator*/
-        iterator operator--(int); 
+        iterator operator--(int);
         /*prefic decrement operator for iterator*/
         iterator operator--();
 
@@ -79,7 +53,7 @@ public:
         /*  сomparison operator!=
             returns true if objects aren't equal in iterator
             returns false if objects are equal in iterator
-        */  
+        */
         bool operator!=(const iterator &other) const;
 
     private:
@@ -87,98 +61,106 @@ public:
         node *ptrNode_;
     };
 
-    // CR: move to private DONE
-  private:
-        /*returns hash of the element*/
-        long long countHash(const element &e) const;
+    /*returns a pointer to the first element in the list*/
+    iterator begin() const;
 
-  public:
-    
-        /*returns a pointer to the first element in the list*/
-        iterator begin() const;
+    /*returns a pointer to the last element in the list*/
+    iterator end() const;
 
-        /*returns a pointer to the last element in the list*/
-        iterator end() const;
+    /*  if node is found
+        returns an iterator pointing to the node with e
 
-        /*  if node is found
-            returns an iterator pointing to the node with e 
- 
-        */
-        iterator find(const element &e) const;
+    */
+    iterator find(const element &e) const;
 
-        /*default constructor for linkedhs*/
-        linkedhs();
+    /*default constructor for linkedhs*/
+    linkedhs();
 
-        /*destructor*/
-        ~linkedhs();
+    /*destructor*/
+    ~linkedhs();
 
-        /*copy constructor for linkedhs*/
-        linkedhs(const linkedhs &other);
+    /*copy constructor for linkedhs*/
+    linkedhs(const linkedhs &other);
 
-        /*assignment operator for linkedhs */
-        linkedhs &operator=(const linkedhs &other);
-        
-        /*  returns true if the element e exist in the list
-            returns false if the element e doesn't exist in the list
-        */
-        bool contains(const element &e) const;
+    /*assignment operator for linkedhs */
+    linkedhs &operator=(const linkedhs &other);
 
-        
-        /*adds element e to the end of the list*/
-        void addToTheEndOfList(const element &e);
+    /*  returns true if the element e exist in the list
+        returns false if the element e doesn't exist in the list
+    */
+    bool contains(const element &e) const;
 
-        /*  inserts element e to the list 
-            returns true if e was added to the list
-            returns false if e already exists in the list
-        */
-        bool insert(const element &e);
+    /*adds element e to the end of the list*/
+    // void addToTheEndOfList(const element &e);
+    void addToTheEndOfList(const node &e);
 
-        /*
-            increments capacity
-        */
-        void resize();
+    /*  inserts element e to the list
+        returns true if e was added to the list
+        returns false if e already exists in the list
+    */
+    bool insert(const element &e);
 
-        /*  removes element e from the list 
-            returns true if e was deleted to the list
-            returns false if e doesn't exist in the list
-        */
-        bool remove(const element &e);
+    /*
+        increments capacity
+    */
+    void resize();
 
-        /*  deletes a node from the list
-            returns true if the node was deleted
-            returns false if the node wasn't deleted
-        */
-        bool deleteNodeFromList(const element&e);   
+    /*  removes element e from the list
+        returns true if e was deleted to the list
+        returns false if e doesn't exist in the list
+    */
+    bool remove(const element &e);
 
-        /* swaps the linked hash sets*/
-        void swap(linkedhs &other);
-        
-        /*  сomparison operator==
-            returns true if objects are equal in the list
-            returns false if objects aren't equal in the list
-        */
-        bool operator==(const linkedhs &other) const;
+    /*  deletes a node from the list
+        returns true if the node was deleted
+        returns false if the node wasn't deleted
+    */
+    void deleteNodeFromList(const element &e);
 
-        /*  сomparison operator!=
-            returns true if objects aren't equal in the list
-            returns false if objects are equal in the list
-        */ 
-        bool operator!=(const linkedhs &other) const;
-    
-        /* returns the number of elements in the list */
-        size_t size() const;
-        
-        /*  returns true if the list is empty
-            returns false if the list isn't empty
-        */
-        bool empty() const;    
-        
-        /* removes all of the elements from the set*/
-        void clear();
+    /* swaps the linked hash sets*/
+    void swap(linkedhs &other);
 
-        /* prints the set*/
-        void print();
+    /*  сomparison operator==
+        returns true if objects are equal in the list
+        returns false if objects aren't equal in the list
+    */
+    bool operator==(const linkedhs &other) const;
 
+    /*  сomparison operator!=
+        returns true if objects aren't equal in the list
+        returns false if objects are equal in the list
+    */
+    bool operator!=(const linkedhs &other) const;
+
+    /* returns the number of elements in the list */
+    size_t size() const;
+
+    /*  returns true if the list is empty
+        returns false if the list isn't empty
+    */
+    bool empty() const;
+
+    /* removes all of the elements from the set*/
+    void clear();
+
+    /* prints the set*/
+    void print();
+
+
+private:
+    std::vector<node *> vect_;
+
+    std::vector<bool> existElem_;
+
+    node *head_;
+    node *tail_;
+    size_t insertedElements_;
+
+    constexpr static double DEFAULT_LOAD_FACTOR_ = 0.75;
+    constexpr static size_t DEFAULT_VECTOR_CAPACITY_ = 16;
+
+    /*returns hash of the element*/
+    long long countHash(const element &e) const;
 };
 
-#endif //LINKED_HASH_SET_
+#endif // LINKED_HASH_SET_
