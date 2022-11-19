@@ -90,21 +90,10 @@ bool linkedhs::empty() const { return size() == 0; }
 
 void linkedhs::swap(linkedhs &other) {
     std::swap(this->vect_, other.vect_);
+    std::swap(this->existElem_, other.existElem_);
     std::swap(this->head_, other.head_);
     std::swap(this->tail_, other.tail_);
     std::swap(this->insertedElements_, other.insertedElements_);
-
-    // std::vector::swap(*this(other));
-    // other.swap(*this);
-   
-    // vect_.resize(DEFAULT_VECTOR_CAPACITY_);
-    // other.vect_.resize(DEFAULT_VECTOR_CAPACITY_);
-    // std::swap(this->vect_.resize(DEFAULT_VECTOR_CAPACITY_),
-    //            other.vect_.resize(DEFAULT_VECTOR_CAPACITY_));
-    // size_t cap = this->vect_.capacity();
-    // size_t otherCap = other.vect_.capacity();
-    // // std::swap(this->vect_.capacity(), other.vect_.capacity());
-    // std::vector::swap(this->capa)
 }
 
 void linkedhs::print() {
@@ -198,11 +187,12 @@ void linkedhs::resize() {
     vectNew.resize(vect_.capacity() * 2);
 
     existElem_.resize(vectNew.capacity()); 
-
+    
     for (size_t i = 0; i < vect_.capacity() / 2; i++) {
         if (vect_[i] != nullptr) {
             long long newHashElem =
                 vect_[i]->data.hash() % vect_.capacity();
+
             vectNew[newHashElem] = vect_[i];
         }
     }
@@ -217,14 +207,8 @@ void linkedhs::addToTheEndOfList(const linkedhs::node &e) {
     if (insertedElements_ == 0) {
         head_ = tmp;
         tail_ = tmp;
-    } else {
-        // CR: simplify
-        // tail_->next = tmp;
-        // node *lastElem = tail_; 
-        //     // store a pointer to the last elem in the list
-        // tail_ = tmp;
-        // tail_->prev = lastElem; // add elem to the end of the list
-
+    } 
+    else {
         tail_->next = tmp;
         tmp->prev = tail_;
         tail_ = tail_->next;

@@ -149,8 +149,7 @@ public:
 
 private:
     std::vector<node *> vect_;
-
-    std::vector<bool> existElem_;
+    std::vector<bool> existElem_ = {false};
 
     node *head_;
     node *tail_;
