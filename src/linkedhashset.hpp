@@ -9,18 +9,8 @@ typedef student element;
 
 class linkedhs {
     
-    struct node {
-        element data;
-        node *prev;
-        node *next;
-
-        /*default constructor for struct node*/
-        node() : prev(nullptr), next(nullptr) {}
-
-        /*constructor for struct node with paremeters*/
-        node(element dataNew)
-            : data(dataNew), prev(nullptr), next(nullptr){};
-    };
+private:
+  struct node;
 
 public:
     class iterator {
@@ -160,6 +150,19 @@ private:
 
     /*returns hash of the element*/
     long long countHash(const element &e) const;
+
+    struct node {
+        element data;
+        node *prev;
+        node *next;
+
+        /*default constructor for struct node*/
+        node() : prev(nullptr), next(nullptr) {}
+
+        /*constructor for struct node with paremeters*/
+        node(element dataNew)
+            : data(dataNew), prev(nullptr), next(nullptr){};
+    };
 };
 
 #endif // LINKED_HASH_SET_
