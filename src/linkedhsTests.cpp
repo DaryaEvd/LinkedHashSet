@@ -15,7 +15,7 @@ TEST(LHS, InsertExistingValue) {
     ASSERT_EQ(set.insert(element(15, "Petya")), false);
 }
 
-TEST(LHS, InsertMoreThanDefaultCapacity) {
+TEST(LHS, InsertMoreThanDefaultCapacity) { // +check resize()
     linkedhs set;
     for (int i = 0; i < 100; i++) {
         set.insert(element(i, "name"));
@@ -105,8 +105,6 @@ TEST(LHS, DeleteElemFromTheStart) {
         if (!set1.contains(
                 element(i, "student" + (std::to_string(i))))) {
             ASSERT_EQ(set1.contains(element(0, "student0")), false);
-            // ASSERT_EQ(set1.contains(element(i, "student" +
-            // (std::to_string(i)))), true);
         }
     }
 }
