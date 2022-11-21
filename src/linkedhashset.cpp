@@ -42,43 +42,51 @@ bool linkedhs::iterator::operator!=(
     return !(*this == other);
 }
 
-linkedhs::iterator linkedhs::begin() const { 
-    return iterator(head_); 
-}
+linkedhs::iterator linkedhs::begin() const { return iterator(head_); }
 
-linkedhs::iterator linkedhs::end() const { 
-    return iterator(nullptr); 
-}
+linkedhs::iterator linkedhs::end() const { return iterator(nullptr); }
 
 // linkedhashset
 
-linkedhs::linkedhs()
-    : vect_(DEFAULT_VECTOR_CAPACITY_), existElem_(DEFAULT_VECTOR_CAPACITY_), head_(nullptr), tail_(nullptr), insertedElements_(0) {
+void linkedhs::print() {
+    if (!empty()) {
+        node *tmp = head_;
+        while (tmp != nullptr) {
+            std::cout << tmp->data.name_ << " " << tmp->data.age_
+                      << std::endl;
+            tmp = tmp->next;
+        }
+    }
 }
 
-linkedhs::~linkedhs() {
-    // CR: clear
+linkedhs::linkedhs()
+    : vect_(DEFAULT_VECTOR_CAPACITY_),
+      existElem_(DEFAULT_VECTOR_CAPACITY_), head_(nullptr),
+      tail_(nullptr), insertedElements_(0) {}
+
+linkedhs::linkedhs(int size)
+    : vect_(DEFAULT_VECTOR_CAPACITY_ * size),
+      existElem_(DEFAULT_VECTOR_CAPACITY_ * size), head_(nullptr),
+      tail_(nullptr), insertedElements_(0) {}
+
+linkedhs::~linkedhs() { ClearNodes(); }
+
+void linkedhs::ClearNodes() {
     while (head_ != nullptr) {
-        node *next = head_->next;
-        delete head_;
-        head_ = next;
+        node *tmp = head_;
+        head_ = head_->next;
+        delete tmp;
     }
 }
 
 void linkedhs::clear() {
-    node *curr = head_;
-    // CR: clear_nodes()
-    while (curr != nullptr) {
-        node *tmp = curr;
-        curr = curr->next;
-        delete tmp;
-    }
+
+    ClearNodes();
 
     head_ = nullptr;
     tail_ = nullptr;
     insertedElements_ = 0;
     vect_.resize(DEFAULT_VECTOR_CAPACITY_);
-
     existElem_.resize(DEFAULT_VECTOR_CAPACITY_);
 }
 
@@ -94,17 +102,6 @@ void linkedhs::swap(linkedhs &other) {
     std::swap(this->insertedElements_, other.insertedElements_);
 }
 
-void linkedhs::print() {
-    if (!empty()) {
-        node *tmp = head_;
-        while (tmp != nullptr) {
-            std::cout << tmp->data.name_ << " " << tmp->data.age_
-                      << std::endl;
-            tmp = tmp->next;
-        }
-    }
-}
-
 bool linkedhs::operator!=(const linkedhs &other) const {
     return !(*this == other);
 }
@@ -113,7 +110,6 @@ linkedhs::linkedhs(const linkedhs &other)
     : head_(nullptr), tail_(nullptr), insertedElements_(0) {
 
     vect_.resize(DEFAULT_VECTOR_CAPACITY_);
-
     existElem_.resize(DEFAULT_VECTOR_CAPACITY_);
 
     for (auto it = other.begin(); it != other.end(); it++) {
@@ -125,7 +121,6 @@ linkedhs &linkedhs::operator=(const linkedhs &other) {
     if (*this == other) {
         return *this;
     }
-
     clear();
 
     for (auto it = other.begin(); it != other.end(); it++) {
@@ -144,7 +139,6 @@ bool linkedhs::operator==(const linkedhs &other) const {
             return false;
         }
     }
-
     return true;
 }
 
@@ -153,77 +147,50 @@ long long linkedhs::countHash(const element &e) const {
 }
 
 linkedhs::iterator linkedhs::find(const element &e) const {
-    long long hashElem = countHash(e);
-
-    if (vect_[hashElem] == nullptr) {
-        return end();
-    }
-    // CR: doesn't start from the beginning
-    for (auto iter = vect_.begin() + hashElem; iter < vect_.end();
-                                                iter++) {
-        if (vect_[hashElem] != nullptr) {
-
-            if (*iter == vect_[hashElem] &&
-                vect_[hashElem]->data == e &&
-                existElem_[hashElem] == true) {
-                return iterator(*iter);
-            }
-
-            hashElem = (hashElem + 1) % vect_.capacity();
-        }
-    }
-
-    return end();
-    // int idx = find_pos(e); return idx == -1 ? end() : iterator(vect_[idx]);
-}
-
-int find_pos(const element & e) {
-  // return -1;
-  // ...rest of the code...
-  // return hashElem;
+    int idx = FindPos(e);
+    return idx == -1 ? end() : iterator(vect_[idx]);
 }
 
 bool linkedhs::contains(const element &e) const {
     return find(e) != end();
 }
 
-void linkedhs::resize() {
-    // linkedhs lhs(vect_.capacity() * 2);
-    // for (size_t i = 0; i < vect_.capacity() / 2; i++) {
-    //   if (!existElem_[i]) continue;
-    //   lhs.insert(vect_[i]->data);
-    // }
-    // this->swap(lhs);
-
-    std::vector<node *> vectNew;
-    vectNew.resize(vect_.capacity() * 2);
-
-    existElem_.resize(vectNew.capacity()); 
-    
-    for (size_t i = 0; i < vect_.capacity() / 2; i++) {
-        if (vect_[i] != nullptr) {
-            long long newHashElem =
-                vect_[i]->data.hash() % vect_.capacity();
-
-            vectNew[newHashElem] = vect_[i];
+void linkedhs::rehash() {
+    linkedhs lhs(vect_.capacity() * 2);
+    for (size_t i = 0; i < vect_.capacity(); i++) {
+        if (existElem_[i] == false) {
+            continue;
         }
+        lhs.insert(vect_[i]->data);
     }
-
-    vect_ = vectNew;
+    this->swap(lhs);
 }
 
-void linkedhs::addToTheEndOfList(const linkedhs::node &e) {
-    node *tmp = new node(e);
-
+void linkedhs::addToTheEndOfList(linkedhs::node *e) {
     if (insertedElements_ == 0) {
-        head_ = tmp;
-        tail_ = tmp;
-    } 
-    else {
-        tail_->next = tmp;
-        tmp->prev = tail_;
+        head_ = e;
+        tail_ = e;
+    } else {
+        tail_->next = e;
+        e->prev = tail_;
         tail_ = tail_->next;
     }
+}
+
+int linkedhs::FindPos(const element &e) const {
+    long long hashElem = countHash(e);
+
+    int idx = hashElem;
+
+    for (int i = 0; i < vect_.capacity(); i++) {
+        if (vect_[idx] != nullptr) {
+            if (vect_[idx]->data == e && existElem_[idx] == true) {
+                return idx;
+            }
+        }
+        idx = (idx + 1) % vect_.capacity();
+    }
+    return -1;
 }
 
 bool linkedhs::insert(const element &e) {
@@ -232,91 +199,65 @@ bool linkedhs::insert(const element &e) {
     }
     if (insertedElements_ >=
         vect_.capacity() * DEFAULT_LOAD_FACTOR_) {
-        resize();
+        rehash();
     }
 
     long long hashElem = countHash(e);
+    int idx = hashElem;
 
-    // size_t idx = hashElem;
-    // while (true) {
-    //   node * cur = vect_[idx];
-    //   if (cur != nullptr) {
-        
-    //   }
-    //   idx = (hashElem + 1) % vect_.capacity();
-    // }
-
-    auto iter = vect_.begin() + hashElem;
-    for (; iter != vect_.end(); iter++) {
-        if (vect_[hashElem] == nullptr ||
-            existElem_[hashElem] == false) {
-
-            existElem_[hashElem] = true;
-
+    for (int i = 0; i < vect_.capacity(); i++) {
+        if (vect_[idx] == nullptr || existElem_[idx] == false) {
             node *toInsert = new node(e);
-            vect_[hashElem] = toInsert;
-            // CR: reuse toInsert
-            addToTheEndOfList(*toInsert);
+            vect_[idx] = toInsert;
+            addToTheEndOfList(toInsert);
+
+            existElem_[idx] = true;
             insertedElements_++;
             return true;
         }
-        hashElem = (hashElem + 1) % vect_.capacity();
+        idx = (idx + 1) % vect_.capacity();
     }
-    vect_.resize(DEFAULT_VECTOR_CAPACITY_);
     return false;
 }
 
-// CR: delete using node*
-void linkedhs::deleteNodeFromList(const element &e) {
-    if (head_->data == e) {
-        head_ = head_->next;
+void linkedhs::deleteNodeFromList(const linkedhs::node *e) {
+    if (head_ == e) {
+        head_ = e->next;
         if (head_ == nullptr) {
             tail_ = nullptr;
         } else {
             head_->prev = nullptr;
         }
-        return;
     }
 
-    else if (tail_->data == e) {
-        tail_ = tail_->prev;
+    else if (tail_ == e) {
+        tail_ = e->prev;
         tail_->next = nullptr;
-        return;
     }
 
-    node *tmp = head_;
-    node *beforeTmp = head_;
-    // CR: O(n)
-    while (tmp->next != nullptr && tmp->data != e) {
-        beforeTmp = tmp;
-        tmp = tmp->next;
+    else {
+        if (e->prev != nullptr) {
+            e->prev->next = e->next;
+        }
+
+        if (e->next != nullptr) {
+            e->next->prev = e->prev;
+        }
     }
-    if (tmp->data == e) {
-        beforeTmp->next = tmp->next;
-        delete tmp;
-    }
+    delete e;
 }
 
 bool linkedhs::remove(const element &e) {
-    long long hashElem = countHash(e);
-    if (vect_[hashElem] == nullptr) {
+    int pos = FindPos(e);
+    if (pos == -1) {
         return false;
     }
-    // CR: use find_pos
-    for (auto iter = vect_.begin() + hashElem; iter != vect_.end();
-                                                        iter++) {
-        if (vect_[hashElem] != nullptr) {
-            if (vect_[hashElem]->data == e &&
-                existElem_[hashElem] == true) {
-                deleteNodeFromList(e);
-                existElem_[hashElem] = false;
 
-                insertedElements_--;
-                return true;
-            }
-        }
-        hashElem = (hashElem + 1) % vect_.capacity();
-    }
+    deleteNodeFromList(vect_.at(pos));
+    vect_.at(pos) = nullptr;
 
-    return false;
+    existElem_[pos] = false;
+    insertedElements_--;
+
+    return true;
 }

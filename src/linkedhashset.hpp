@@ -10,7 +10,7 @@ typedef student element;
 class linkedhs {
     
 private:
-  struct node;
+    struct node;
 
 public:
     class iterator {
@@ -59,12 +59,15 @@ public:
 
     /*  if node is found
         returns an iterator pointing to the node with e
-
+        otherwise returns end()
     */
     iterator find(const element &e) const;
 
     /*default constructor for linkedhs*/
     linkedhs();
+
+    /*construstor with parametr size*/
+    linkedhs(int size);
 
     /*destructor*/
     ~linkedhs();
@@ -75,6 +78,12 @@ public:
     /*assignment operator for linkedhs */
     linkedhs &operator=(const linkedhs &other);
 
+    /*
+        finds a necessary poosition 
+        otherwise returns -1
+    */
+    int FindPos(const element &e) const;
+
     /*  returns true if the element e exist in the list
         returns false if the element e doesn't exist in the list
     */
@@ -82,7 +91,7 @@ public:
 
     /*adds element e to the end of the list*/
     // void addToTheEndOfList(const element &e);
-    void addToTheEndOfList(const node &e);
+    void addToTheEndOfList(node *e);
 
     /*  inserts element e to the list
         returns true if e was added to the list
@@ -91,9 +100,11 @@ public:
     bool insert(const element &e);
 
     /*
-        increments capacity
+        increments capacityin 2 times,
+        recalculate hashes of elements and
+        moves them to container with doubled capacity
     */
-    void resize();
+    void rehash();
 
     /*  removes element e from the list
         returns true if e was deleted to the list
@@ -101,11 +112,8 @@ public:
     */
     bool remove(const element &e);
 
-    /*  deletes a node from the list
-        returns true if the node was deleted
-        returns false if the node wasn't deleted
-    */
-    void deleteNodeFromList(const element &e);
+    /*  deletes a node from the list */
+    void deleteNodeFromList( const node *e);
 
     /* swaps the linked hash sets*/
     void swap(linkedhs &other);
@@ -130,12 +138,14 @@ public:
     */
     bool empty() const;
 
+    /*clears nodes in the list*/
+    void ClearNodes();
+
     /* removes all of the elements from the set*/
     void clear();
 
-    /* prints the set*/
+    /* prints linked hash set in order of addition*/
     void print();
-
 
 private:
     std::vector<node *> vect_;
@@ -145,7 +155,7 @@ private:
     node *tail_;
     size_t insertedElements_;
 
-    constexpr static double DEFAULT_LOAD_FACTOR_ = 0.75;
+    constexpr static double DEFAULT_LOAD_FACTOR_ = 0.65;
     constexpr static size_t DEFAULT_VECTOR_CAPACITY_ = 16;
 
     /*returns hash of the element*/
