@@ -9,11 +9,20 @@
 TEST(LHS, InsertExistingValue) {
     linkedhs set;
 
+    ASSERT_EQ(set.insert(element(15, "Petya")), true);
     for (int i = 0; i < 15; i++) {
-        set.insert(element(15, "Petya"));
+        ASSERT_EQ(set.insert(element(15, "Petya")), false);
     }
-    ASSERT_EQ(set.insert(element(15, "Petya")), false);
 }
+
+/*
+CR:
+1. insert in empty
+2. insert same element
+3. insert new element
+4. insert and resize
+5. insert and resize and then remove all but one
+*/
 
 TEST(LHS, InsertMoreThanDefaultCapacity) { // +check resize()
     linkedhs set;
@@ -49,8 +58,12 @@ TEST(LHS, CheckingSizeNotUniqueStudents) {
     set.insert(element(0, "Vlad"));
     set.insert(element(0, "Vlad"));
 
+    ASSERT_EQ(set.size(), 1);
+
     set.insert(element(19, "Yura"));
     set.insert(element(19, "Yura"));
+
+    ASSERT_EQ(set.size(), 2);
 
     set.insert(element(18, "Yura"));
 
@@ -65,7 +78,7 @@ TEST(LHS, CheckingEmptyAfterDeleting) {
     linkedhs set;
     set.insert(element(0, "Vlad"));
     set.remove(element(0, "Vlad"));
-
+    // CR: ASSERT_???
     ASSERT_EQ(set.empty(), true);
 }
 

@@ -59,11 +59,13 @@ void linkedhs::print() {
     }
 }
 
+// CR: call another ctor
 linkedhs::linkedhs()
     : vect_(DEFAULT_VECTOR_CAPACITY_),
       existElem_(DEFAULT_VECTOR_CAPACITY_), head_(nullptr),
       tail_(nullptr), insertedElements_(0) {}
 
+// CR: size_t
 linkedhs::linkedhs(int size)
     : vect_(DEFAULT_VECTOR_CAPACITY_ * size),
       existElem_(DEFAULT_VECTOR_CAPACITY_ * size), head_(nullptr),
@@ -108,7 +110,7 @@ bool linkedhs::operator!=(const linkedhs &other) const {
 
 linkedhs::linkedhs(const linkedhs &other)
     : head_(nullptr), tail_(nullptr), insertedElements_(0) {
-
+    // CR: init list
     vect_.resize(DEFAULT_VECTOR_CAPACITY_);
     existElem_.resize(DEFAULT_VECTOR_CAPACITY_);
 
@@ -188,6 +190,9 @@ int linkedhs::FindPos(const element &e) const {
                 return idx;
             }
         }
+        else {
+          return -1;
+        }
         idx = (idx + 1) % vect_.capacity();
     }
     return -1;
@@ -208,6 +213,7 @@ bool linkedhs::insert(const element &e) {
     for (int i = 0; i < vect_.capacity(); i++) {
         if (vect_[idx] == nullptr || existElem_[idx] == false) {
             node *toInsert = new node(e);
+            // CR: delete vect_[idx]
             vect_[idx] = toInsert;
             addToTheEndOfList(toInsert);
 
@@ -219,6 +225,30 @@ bool linkedhs::insert(const element &e) {
     }
     return false;
 }
+
+/*
+h(e1) = 1
+h(e2) = 1
+h(eN) = n
+insert(e1)
+insert(eN)
+find(e2) --- O(n)
+*/
+
+/*
+h(e1) = 1
+h(e2) = 1
+insert(e1)
+insert(e2)
+remove(e1)
+find(e2) --- didn't find because of nullptr
+*/
+
+/*
+2nd-case +
+h(e3) = 1
+insert(e3) -- memory leak
+*/
 
 void linkedhs::deleteNodeFromList(const linkedhs::node *e) {
     if (head_ == e) {
@@ -254,7 +284,7 @@ bool linkedhs::remove(const element &e) {
     }
 
     deleteNodeFromList(vect_.at(pos));
-    vect_.at(pos) = nullptr;
+    // vect_.at(pos) = nullptr;
 
     existElem_[pos] = false;
     insertedElements_--;
