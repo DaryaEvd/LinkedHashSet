@@ -1,109 +1,110 @@
 #include <gtest/gtest.h>
+#include <string.h>
 
 #include "linkedhashset.hpp"
 
-#include <string.h>
-#include <string>
-
-// tests for insert
-TEST(LHS, InsertExistingValue) {
+TEST(LHS, RemoveTwoWithSameHash) {
     linkedhs set;
+    set.insert(element(0, "Anton")); // the same hash
+    set.insert(element(5, "Kapop")); // the same hash
 
-    ASSERT_EQ(set.insert(element(15, "Petya")), true);
-    for (int i = 0; i < 15; i++) {
-        ASSERT_EQ(set.insert(element(15, "Petya")), false);
-    }
+    ASSERT_TRUE(set.remove(element(0, "Anton")));
+    ASSERT_TRUE(set.remove(element(5, "Kapop")));
 }
 
-/*
-CR:
-1. insert in empty
-2. insert same element
-3. insert new element
-4. insert and resize
-5. insert and resize and then remove all but one
-*/
+TEST(LHS, RemoveSameHashAndInsert) {
+    linkedhs set;
+    set.insert(element(0, "Anton")); // the same hash
+    set.insert(element(5, "Kapop")); // the same hash
 
-TEST(LHS, InsertMoreThanDefaultCapacity) { // +check resize()
+    set.remove(element(0, "Anton"));
+
+    ASSERT_TRUE(set.insert(element(5, "Yura"))); // the same hash
+    ASSERT_TRUE(set.insert(element(15, "Kirill"))); // the same hash)
+}
+
+TEST(LHS, RemoveLotsElems) {
     linkedhs set;
     for (int i = 0; i < 100; i++) {
-        set.insert(element(i, "name"));
+        set.insert(element(i, "name" + (std::to_string(i))));
+    }
+
+    for (int i = 0; i < 99; i++) {
+        set.remove(element(i, "name" + (std::to_string(i))));
+    }
+
+    ASSERT_EQ(set.size(), 1);
+
+    linkedhs::iterator iter = set.begin();
+    ASSERT_EQ((*iter).age_, 99);
+    ASSERT_EQ((*iter).name_, "name99");
+
+    iter++;
+    ASSERT_EQ(iter, set.end());
+}
+
+TEST(LHS, RemoveFromEmpty) {
+    linkedhs set;
+    ASSERT_EQ(set.size(), 0);
+
+    ASSERT_FALSE(set.remove(element(0, "name0")));
+}
+
+TEST(LHS, InsertInEmpty) {
+    linkedhs set;
+    ASSERT_TRUE(set.empty());
+
+    set.insert(element(0, "Petya"));
+
+    ASSERT_EQ(set.size(), 1);
+}
+
+TEST(LHS, InsertNewElem) {
+    linkedhs set;
+
+    set.insert(element(0, "student0"));
+    ASSERT_TRUE(set.insert(element(1, "student1")));
+}
+
+TEST(LHS, InsertSameElem) {
+    linkedhs set;
+
+    set.insert(element(0, "Petya"));
+    ASSERT_FALSE(set.insert(element(0, "Petya")));
+}
+TEST(LHS, InsertAndResize) {
+    linkedhs set;
+    for (int i = 0; i < 100; i++) {
+        set.insert(element(i, "name" + (std::to_string(i))));
     }
 
     ASSERT_EQ(set.size(), 100);
 
     for (int i = 0; i < set.size(); i++) {
-        ASSERT_EQ(set.contains(element(i, "name")), true);
+        ASSERT_TRUE(
+            set.contains(element(i, "name" + (std::to_string(i)))));
     }
 }
 
-// tests for size and empty
-TEST(LHS, CheckingSizeUniqueStudents) {
+TEST(LHS, InsertResizeRemoveAllButOne) {
     linkedhs set;
-    set.insert(element(0, "Vlad"));
-    set.insert(element(19, "Yura"));
-    set.insert(element(18, "Yura"));
-    set.insert(element(567, "Egor"));
-    set.insert(element(19, "Nastya"));
-    set.insert(element(19, "Anya"));
-    set.insert(element(19, "Nadya"));
-    set.insert(element(19, "Zhenya"));
-    set.insert(element(6, "Mishka"));
+    for (int i = 0; i < 100; i++) {
+        set.insert(element(i, "name" + (std::to_string(i))));
+    }
 
-    ASSERT_EQ(set.size(), 9);
-}
+    ASSERT_EQ(set.size(), 100);
 
-TEST(LHS, CheckingSizeNotUniqueStudents) {
-    linkedhs set;
-    set.insert(element(0, "Vlad"));
-    set.insert(element(0, "Vlad"));
+    for (int i = 0; i < 99; i++) {
+        ASSERT_TRUE(
+            set.remove(element(i, "name" + (std::to_string(i)))));
+    }
 
     ASSERT_EQ(set.size(), 1);
 
-    set.insert(element(19, "Yura"));
-    set.insert(element(19, "Yura"));
-
-    ASSERT_EQ(set.size(), 2);
-
-    set.insert(element(18, "Yura"));
-
-    set.insert(element(19, "Nastya"));
-    set.insert(element(19, "Anya"));
-    set.insert(element(19, "Nadya"));
-
-    ASSERT_EQ(set.size(), 6);
+    ASSERT_TRUE(set.contains(element(99, "name99")));
 }
 
-TEST(LHS, CheckingEmptyAfterDeleting) {
-    linkedhs set;
-    set.insert(element(0, "Vlad"));
-    set.remove(element(0, "Vlad"));
-    // CR: ASSERT_???
-    ASSERT_EQ(set.empty(), true);
-}
-
-TEST(LHS, CheckingEmptyAfterAdding) {
-    linkedhs set;
-    set.insert(element(0, "Vlad"));
-    set.remove(element(0, "Vlad"));
-    set.insert(element(0, "Vlad"));
-
-    ASSERT_EQ(set.empty(), false);
-}
-
-// tests for remove
-TEST(LHS, DeleteElemsWithTheSameHash) {
-    linkedhs set1;
-    set1.insert(element(0, "Anton")); // the same hash
-    set1.insert(element(5, "Kapop")); // the same hash
-
-    set1.remove(element(0, "Anton"));
-    set1.remove(element(5, "Kapop"));
-
-    ASSERT_EQ(set1.size(), 0);
-}
-
-TEST(LHS, DeleteElemFromTheStart) {
+TEST(LHS, DeleteStartElem) {
     linkedhs set1;
 
     for (int i = 0; i < 100; i++) {
@@ -117,32 +118,12 @@ TEST(LHS, DeleteElemFromTheStart) {
     for (int i = 0; i < set1.size(); i++) {
         if (!set1.contains(
                 element(i, "student" + (std::to_string(i))))) {
-            ASSERT_EQ(set1.contains(element(0, "student0")), false);
+            ASSERT_FALSE(set1.contains(element(0, "student0")));
         }
     }
 }
 
-TEST(LHS, DeleteElemFromTheMiddle) {
-    linkedhs set1;
-
-    for (int i = 0; i < 1000; i++) {
-        set1.insert(element(i, "student" + (std::to_string(i))));
-    }
-
-    ASSERT_EQ(set1.size(), 1000);
-
-    set1.remove(element(1000, "student100"));
-
-    for (int i = 0; i < set1.size(); i++) {
-        if (!set1.contains(
-                element(i, "student" + (std::to_string(i))))) {
-            ASSERT_EQ(set1.contains(element(1000, "student100")),
-                      false);
-        }
-    }
-}
-
-TEST(LHS, DeleteElemFromTheEnd) {
+TEST(LHS, DeleteMiddleElem) {
     linkedhs set1;
 
     for (int i = 0; i < 100; i++) {
@@ -156,137 +137,186 @@ TEST(LHS, DeleteElemFromTheEnd) {
     for (int i = 0; i < set1.size(); i++) {
         if (!set1.contains(
                 element(i, "student" + (std::to_string(i))))) {
-            ASSERT_EQ(set1.contains(element(50, "student50")), false);
+            ASSERT_FALSE(set1.contains(element(50, "student50")));
+        }
+    }
+}
+
+TEST(LHS, DeleteLastElem) {
+    linkedhs set1;
+
+    for (int i = 0; i < 100; i++) {
+        set1.insert(element(i, "student" + (std::to_string(i))));
+    }
+
+    ASSERT_EQ(set1.size(), 100);
+
+    set1.remove(element(100, "student100"));
+
+    for (int i = 0; i < set1.size(); i++) {
+        if (!set1.contains(
+                element(i, "student" + (std::to_string(i))))) {
+            ASSERT_FALSE(set1.contains(element(1000, "student100")));
         }
     }
 }
 
 // tests for clear
-TEST(LHS, CheckSizeAfterClearingNotEmptyLHS) {
+TEST(LHS, CheckClearThenInsert) {
     linkedhs set;
-    set.insert(element(0, "Anton"));
-    set.insert(element(19, "Stepa"));
-    set.insert(element(5, "Kirill"));
+    for (int i = 0; i < 100; i++) {
+        set.insert(element(i, "student" + (std::to_string(i))));
+    }
 
     set.clear();
-
     ASSERT_EQ(set.size(), 0);
+    ASSERT_TRUE(set.empty());
+
+    set.insert(element(90, "student"));
+    ASSERT_EQ(set.size(), 1);
+    ASSERT_FALSE(set.empty());
 }
 
-TEST(LHS, CheckSizeAfterClearingEmptyLHS) {
+TEST(LHS, CheckAfterClearingEmptyLHS) {
     linkedhs set;
-    set.clear();
 
+    set.clear();
     ASSERT_EQ(set.size(), 0);
+    ASSERT_TRUE(set.empty());
 }
 
-TEST(LHS, CheckEmptyAfterClearing) {
-    linkedhs set;
-    set.clear();
-
-    ASSERT_EQ(set.empty(), true);
-}
-
-// tests for clear and operator= and copy ctor
-TEST(LHS, CheckSizeClearThenAssign) {
+// tests for operator=
+TEST(LHS, CheckAssignOperator) {
     linkedhs set1;
-    set1.insert(element(0, "Anton"));
-    set1.insert(element(19, "Yura"));
-    set1.insert(element(5, "Sasha"));
+    for (int i = 0; i < 50; i++) {
+        set1.insert(element(i, "student" + (std::to_string(i))));
+    }
+
+    linkedhs set2;
+    for (int i = 0; i < 100; i++) {
+        set1.insert(element(i, "name" + (std::to_string(i))));
+    }
+
+    set1 = set2;
+
+    ASSERT_EQ(set2.size(), set1.size());
+
+    for (int i = 0; i < set1.size(); i++) {
+        ASSERT_FALSE(
+            !set1.contains(element(i, "name" + (std::to_string(i)))));
+    }
+
+    for (int i = 0; i < set2.size(); i++) {
+        ASSERT_FALSE(
+            !set2.contains(element(i, "name" + (std::to_string(i)))));
+    }
+}
+
+TEST(LHS, CheckAssignOpClearThenAssign) {
+    linkedhs set1;
+    for (int i = 0; i < 100; i++) {
+        set1.insert(element(i, "student" + (std::to_string(i))));
+    }
 
     set1.clear();
     linkedhs set2;
     set2 = set1;
 
+    ASSERT_EQ(set1.size(), 0);
     ASSERT_EQ(set2.size(), set1.size());
+
+    for (int i = 0; i < 100; i++) {
+        ASSERT_FALSE(set2.contains(
+            element(i, "student" + (std::to_string(i)))));
+    }
 }
 
-TEST(LHS, CheckSizeClearThenCopy) {
+// tests for copy ctor
+TEST(LHS, CheckCopyCtor) {
     linkedhs set1;
-    set1.insert(element(0, "Anton"));
-    set1.insert(element(19, "Yura"));
-    set1.insert(element(5, "Sasha"));
+    for (int i = 0; i < 100; i++) {
+        set1.insert(element(i, "student" + (std::to_string(i))));
+    }
+    linkedhs set2(set1);
+
+    ASSERT_EQ(set2.size(), set1.size());
+    for (int i = 0; i < set2.size(); i++) {
+        ASSERT_TRUE(set2.contains(
+            element(i, "student" + (std::to_string(i)))));
+    }
+}
+
+TEST(LHS, CheckCopyCtorClearThenCopy) {
+    linkedhs set1;
+    for (int i = 0; i < 100; i++) {
+        set1.insert(element(i, "student" + (std::to_string(i))));
+    }
 
     set1.clear();
     linkedhs set2(set1);
 
+    ASSERT_EQ(set2.size(), 0);
     ASSERT_EQ(set2.size(), set1.size());
+
+    for (int i = 0; i < 1000; i++) {
+        ASSERT_FALSE(set2.contains(
+            element(i, "student" + (std::to_string(i)))));
+    }
 }
 
 // tests for operator== and !=
 TEST(LHS, CheckEqualityOperator) {
     linkedhs set1;
-    for (int i = 0; i < 10; i++) {
-        set1.insert(element(i, "Name"));
+    for (int i = 0; i < 100; i++) {
+        set1.insert(element(i, "student" + (std::to_string(i))));
     }
 
     linkedhs set2;
-    for (int i = 0; i < 10; i++) {
-        set2.insert(element(i, "Name"));
+    for (int i = 0; i < 100; i++) {
+        set2.insert(element(i, "name" + (std::to_string(i))));
     }
 
-    ASSERT_EQ(set1 == set2, true);
-}
-
-TEST(LHS, CheckInequalityOperator) {
-    linkedhs set1;
-    for (int i = 0; i < 10; i++) {
-        set1.insert(element(i, "Name1"));
-        set1.insert(element(i, "Name2"));
-    }
-
-    linkedhs set2;
-    for (int i = 0; i < 10; i++) {
-        set2.insert(element(i, "Name1"));
-    }
-
-    ASSERT_EQ(set1 != set2, true);
+    ASSERT_FALSE(set1 == set2);
+    ASSERT_TRUE(set1 != set2);
 }
 
 // tests for contains
-TEST(LHS, CheckContainingElement) {
+TEST(LHS, CheckContainsElement) {
     linkedhs set1;
     set1.insert(element(0, "Anton"));
     set1.insert(element(19, "Yura"));
     set1.insert(element(5, "Sasha"));
 
-    ASSERT_EQ(set1.contains(element(5, "Sasha")), true);
-}
-
-TEST(LHS, CheckNotContainingElement) {
-    linkedhs set1;
-    set1.insert(element(0, "Anton"));
-    set1.insert(element(19, "Yura"));
-    set1.insert(element(5, "Sasha"));
-
-    ASSERT_EQ(set1.contains(element(89, "Emelya")), false);
+    ASSERT_TRUE(set1.contains(element(5, "Sasha")));
+    ASSERT_FALSE(set1.contains(element(90, "Avdey")));
 }
 
 // tests for swap
 TEST(LHS, CheckSwapDifferentSets) {
     linkedhs set1;
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 5; i++) {
         set1.insert(element(i, "student girls"));
     }
 
     linkedhs set2;
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 12; i++) {
         set2.insert(element(i, "student boys"));
     }
 
     set2.swap(set1);
 
+    ASSERT_EQ(set1.size(), 12);
+    ASSERT_EQ(set2.size(), 5);
+
     for (int i = 0; i < set2.size(); i++) {
         if (set2.contains(element(i, "student girls"))) {
-            ASSERT_EQ(set2.contains(element(i, "student girls")),
-                      true);
+            ASSERT_TRUE(set2.contains(element(i, "student girls")));
         }
     }
 
     for (int i = 0; i < set1.size(); i++) {
         if (set2.contains(element(i, "student boys"))) {
-            ASSERT_EQ(set2.contains(element(i, "student boys")),
-                      true);
+            ASSERT_TRUE(set2.contains(element(i, "student boys")));
         }
     }
 }
@@ -300,8 +330,7 @@ TEST(LHS, CheckSwapSameSet) {
     set1.swap(set1);
     for (int i = 0; i < set1.size(); i++) {
         if (set1.contains(element(i, "student girls"))) {
-            ASSERT_EQ(set1.contains(element(i, "student girls")),
-                      true);
+            ASSERT_TRUE(set1.contains(element(i, "student girls")));
         }
     }
 }
@@ -327,51 +356,6 @@ TEST(LHS, CheckFindNonExistingElement) {
     linkedhs::iterator iter = set1.find(element(51, "Glasha"));
 
     ASSERT_EQ(iter, set1.end());
-}
-
-// tests for operator=
-TEST(LHS, CheckSizeAfterAssigning) {
-    linkedhs set1;
-    set1.insert(element(0, "Anton"));
-    set1.insert(element(19, "Yura"));
-    set1.insert(element(5, "Sasha"));
-
-    linkedhs set2 = set1;
-
-    ASSERT_EQ(set2.size(), set1.size());
-}
-
-// tests for copy ctor
-TEST(LHS, CheckElementsExistingAfterCopying) {
-    linkedhs set1;
-    set1.insert(element(0, "Anton"));
-    set1.insert(element(19, "Yura"));
-    set1.insert(element(5, "Sasha"));
-
-    linkedhs set2(set1);
-
-    bool isConstains = false;
-    for (linkedhs::iterator it = set2.begin(); it != set2.end();
-         it++) {
-        if (set1.contains(element(0, "Anton")) &&
-            set1.contains(element(19, "Yura")) &&
-            set1.contains(element(5, "Sasha")) &&
-            set1.size() == set2.size()) {
-            isConstains = true;
-        }
-    }
-    ASSERT_EQ(isConstains, true);
-}
-
-TEST(LHS, CheckSizeAfterCopying) {
-    linkedhs set1;
-    set1.insert(element(0, "Anton"));
-    set1.insert(element(19, "Yura"));
-    set1.insert(element(5, "Sasha"));
-
-    linkedhs set2(set1);
-
-    ASSERT_EQ(set2.size(), set1.size());
 }
 
 // tests for correct order
@@ -502,7 +486,7 @@ TEST(LHS, CheckOrderAfterDelElemsWithSameHash) {
 
     set1.remove(element(5, "Kapop"));
     linkedhs::iterator iter3 = set1.begin();
-    ASSERT_EQ(iter3 == set1.end(), true);
+    ASSERT_TRUE(iter3 == set1.end());
 }
 
 // tests for iterator
@@ -566,7 +550,7 @@ TEST(ITERATOR, CheckComparisonOperator) {
 
     for (iter1, iter2; iter1 != set1.end() && iter2 != set2.end();
          iter1++, iter2++) {
-        ASSERT_EQ((*iter1) == (*iter2), true);
+        ASSERT_TRUE((*iter1) == (*iter2));
     }
 }
 
@@ -586,7 +570,7 @@ TEST(ITERATOR, CheckNotComparisonOperator) {
 
     for (iter1, iter2; iter1 != set1.end() && iter2 != set2.end();
          iter1++, iter2++) {
-        ASSERT_EQ((*iter1) != (*iter2), true);
+        ASSERT_TRUE((*iter1) != (*iter2));
     }
 }
 

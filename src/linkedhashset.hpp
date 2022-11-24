@@ -40,10 +40,6 @@ public:
         */
         bool operator==(const iterator &other) const;
 
-        /*  сomparison operator!=
-            returns true if objects aren't equal in iterator
-            returns false if objects are equal in iterator
-        */
         bool operator!=(const iterator &other) const;
 
     private:
@@ -51,11 +47,12 @@ public:
         node *ptrNode_;
     };
 
-    /*returns a pointer to the first element in the list*/
-    // CR: order of iteration
+    /*  returns a pointer to the first element in the lhs
+        elements are in order of addition
+    */
     iterator begin() const;
 
-    /*returns a pointer to the last element in the list*/
+    /*returns a pointer to the last element in the lhs*/
     iterator end() const;
 
     /*  if node is found
@@ -66,29 +63,13 @@ public:
 
     linkedhs();
 
-    // CR: private
-    /*construstor with parametr size*/
-    linkedhs(int size);
-
     ~linkedhs();
 
-    // CR: independent copy
+    /* independent copy */
     linkedhs(const linkedhs &other);
 
-    // CR: clear linkedhs & independent copy
+    /* clears linkedhs and independent copy */
     linkedhs &operator=(const linkedhs &other);
-
-    /*
-        finds a necessary poosition 
-        otherwise returns -1
-    */
-    int FindPos(const element &e) const;
-
-    bool contains(const element &e) const;
-
-    /*adds element e to the end of the list*/
-    // void addToTheEndOfList(const element &e);
-    void addToTheEndOfList(node *e);
 
     /*  inserts element e to the linkedhs
         returns true if e was added to the linkedhs
@@ -96,31 +77,20 @@ public:
     */
     bool insert(const element &e);
 
-    /*
-        increments capacityin 2 times,
-        recalculate hashes of elements and
-        moves them to container with doubled capacity
-    */
-   // CR: private
-    void rehash();
-
-    /*  removes element e from the list
-        returns true if e was deleted to the list
-        returns false if e doesn't exist in the list
+    /*  removes element e from the lhs
+        returns true if e was deleted to the lhs
+        returns false if e doesn't exist in the lhs
     */
     bool remove(const element &e);
 
-    // CR: private
-    /*  deletes a node from the list */
-    void deleteNodeFromList( const node *e);
+    bool contains(const element &e) const;
 
     void swap(linkedhs &other);
 
     /*  сomparison operator==
-        returns true if objects are equal in the list
-        returns false if objects aren't equal in the list
+        returns true if objects are equal in the lhs
+        returns false if objects aren't equal in the lhs
     */
-   // CR
     bool operator==(const linkedhs &other) const;
 
     bool operator!=(const linkedhs &other) const;
@@ -129,16 +99,39 @@ public:
 
     bool empty() const;
 
-    // CR: private
-    /*clears nodes in the list*/
-    void ClearNodes();
-
     void clear();
 
-    /* prints linked hash set in order of addition*/
+    /* prints lhs in order of addition*/
     void print();
 
+    void compress(size_t i);
+
 private:
+    /*construstor with parametr number*/
+    linkedhs(size_t number);
+   
+    /*
+        increments capacityin 2 times,
+        recalculate hashes of elements and
+        moves them to lhs with doubled capacity
+    */
+    void rehash();
+
+    /*clears nodes in the lhs*/
+    void clearNodes();
+
+    /*
+        finds a necessary poosition 
+        otherwise returns -1
+    */
+    int findPos(const element &e) const;
+
+    /*adds element e to the end of lhs*/ 
+    void addToTheEndOfList(node *e);
+
+    /*  deletes a node from the lhs */
+    void deleteNodeFromList( const node *e); 
+
     std::vector<node *> vect_;
     std::vector<bool> existElem_;
 
@@ -163,7 +156,7 @@ private:
         /*constructor for struct node with paremeters*/
         node(element dataNew)
             : data(dataNew), prev(nullptr), next(nullptr){};
-    };
+    };       
 };
 
 #endif // LINKED_HASH_SET_
