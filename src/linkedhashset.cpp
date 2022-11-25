@@ -59,6 +59,8 @@ void linkedhs::print() {
     }
 }
 
+linkedhs::linkedhs() : linkedhs(1) {}
+
 linkedhs::linkedhs(size_t number)
     : vect_(DEFAULT_VECTOR_CAPACITY_ * number),
       existElem_(DEFAULT_VECTOR_CAPACITY_ * number), head_(nullptr),
@@ -101,7 +103,7 @@ bool linkedhs::operator!=(const linkedhs &other) const {
     return !(*this == other);
 }
 
-linkedhs::linkedhs(const linkedhs &other) : linkedhs() {
+linkedhs::linkedhs(const linkedhs &other) : linkedhs(1) {
     for (auto it = other.begin(); it != other.end(); it++) {
         insert(*it);
     }
