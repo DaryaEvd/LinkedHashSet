@@ -59,11 +59,13 @@ void linkedhs::print() {
     }
 }
 
+// CR: call ctor with number
 linkedhs::linkedhs()
     : vect_(DEFAULT_VECTOR_CAPACITY_),
       existElem_(DEFAULT_VECTOR_CAPACITY_), head_(nullptr),
       tail_(nullptr), insertedElements_(0) {}
 
+// CR: move resize to init list
 linkedhs::linkedhs(size_t number) : linkedhs() {
     vect_.resize(DEFAULT_VECTOR_CAPACITY_ * number);
     existElem_.resize(DEFAULT_VECTOR_CAPACITY_ * number);
@@ -82,6 +84,7 @@ void linkedhs::clearNodes() {
 void linkedhs::clear() {
 
     clearNodes();
+    // CR: also need to update vect_ and existElem_, can do it inside clearNodes
 
     head_ = nullptr;
     tail_ = nullptr;
@@ -106,6 +109,7 @@ bool linkedhs::operator!=(const linkedhs &other) const {
     return !(*this == other);
 }
 
+// CR: call default ctor
 linkedhs::linkedhs(const linkedhs &other)
     : head_(nullptr), tail_(nullptr), insertedElements_(0),
       vect_(DEFAULT_VECTOR_CAPACITY_),
@@ -261,6 +265,7 @@ bool linkedhs::remove(const element &e) {
     existElem_[pos] = false;
     insertedElements_--;
 
+    // CR: does nothing
     int nextPos = pos;
     for (int i = 0; i < vect_.capacity(); i++) {
         nextPos = (nextPos + 1) % vect_.capacity();
