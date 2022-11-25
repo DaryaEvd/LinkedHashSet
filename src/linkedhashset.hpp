@@ -61,7 +61,8 @@ public:
     */
     iterator find(const element &e) const;
 
-    linkedhs();
+    /*construstor with parametr number*/
+    linkedhs(size_t number = 1);
 
     ~linkedhs();
 
@@ -106,10 +107,8 @@ public:
 
     void compress(size_t i);
 
-private:
-    /*construstor with parametr number*/
-    linkedhs(size_t number);
-   
+    
+private:   
     /*
         increments capacityin 2 times,
         recalculate hashes of elements and

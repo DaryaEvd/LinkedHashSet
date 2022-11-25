@@ -59,17 +59,10 @@ void linkedhs::print() {
     }
 }
 
-// CR: call ctor with number
-linkedhs::linkedhs()
-    : vect_(DEFAULT_VECTOR_CAPACITY_),
-      existElem_(DEFAULT_VECTOR_CAPACITY_), head_(nullptr),
+linkedhs::linkedhs(size_t number)
+    : vect_(DEFAULT_VECTOR_CAPACITY_ * number),
+      existElem_(DEFAULT_VECTOR_CAPACITY_ * number), head_(nullptr),
       tail_(nullptr), insertedElements_(0) {}
-
-// CR: move resize to init list
-linkedhs::linkedhs(size_t number) : linkedhs() {
-    vect_.resize(DEFAULT_VECTOR_CAPACITY_ * number);
-    existElem_.resize(DEFAULT_VECTOR_CAPACITY_ * number);
-}
 
 linkedhs::~linkedhs() { clearNodes(); }
 
@@ -79,18 +72,17 @@ void linkedhs::clearNodes() {
         head_ = head_->next;
         delete tmp;
     }
+    vect_.resize(DEFAULT_VECTOR_CAPACITY_);
+    existElem_.resize(DEFAULT_VECTOR_CAPACITY_);
 }
 
 void linkedhs::clear() {
 
     clearNodes();
-    // CR: also need to update vect_ and existElem_, can do it inside clearNodes
 
     head_ = nullptr;
     tail_ = nullptr;
     insertedElements_ = 0;
-    vect_.resize(DEFAULT_VECTOR_CAPACITY_);
-    existElem_.resize(DEFAULT_VECTOR_CAPACITY_);
 }
 
 size_t linkedhs::size() const { return insertedElements_; }
@@ -109,12 +101,7 @@ bool linkedhs::operator!=(const linkedhs &other) const {
     return !(*this == other);
 }
 
-// CR: call default ctor
-linkedhs::linkedhs(const linkedhs &other)
-    : head_(nullptr), tail_(nullptr), insertedElements_(0),
-      vect_(DEFAULT_VECTOR_CAPACITY_),
-      existElem_(DEFAULT_VECTOR_CAPACITY_) {
-
+linkedhs::linkedhs(const linkedhs &other) : linkedhs() {
     for (auto it = other.begin(); it != other.end(); it++) {
         insert(*it);
     }
@@ -265,10 +252,8 @@ bool linkedhs::remove(const element &e) {
     existElem_[pos] = false;
     insertedElements_--;
 
-    // CR: does nothing
-    int nextPos = pos;
     for (int i = 0; i < vect_.capacity(); i++) {
-        nextPos = (nextPos + 1) % vect_.capacity();
+        int nextPos = (pos + 1) % vect_.capacity();
         if (existElem_[nextPos] == false || nextPos == pos) {
             break;
         }
