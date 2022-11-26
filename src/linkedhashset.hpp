@@ -104,8 +104,6 @@ public:
     /* prints lhs in order of addition*/
     void print();
 
-    void compress(size_t i);
-
 private:
     /*construstor with parametr number*/
     linkedhs(size_t number);
@@ -131,6 +129,9 @@ private:
 
     /*  deletes a node from the lhs */
     void deleteNodeFromList(const node *e);
+ 
+    /*returns hash of the element*/
+    long long countHash(const element &e) const;   
 
     std::vector<node *> vect_;
     std::vector<bool> existElem_;
@@ -141,9 +142,6 @@ private:
 
     constexpr static double DEFAULT_LOAD_FACTOR_ = 0.65;
     constexpr static size_t DEFAULT_VECTOR_CAPACITY_ = 16;
-
-    /*returns hash of the element*/
-    long long countHash(const element &e) const;
 
     struct node {
         element data;
