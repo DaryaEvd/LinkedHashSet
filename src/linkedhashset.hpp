@@ -109,7 +109,7 @@ private:
     linkedhs(size_t number);
 
     /*
-        increments capacityin 2 times,
+        increments capacity in 2 times,
         recalculate hashes of elements and
         moves them to lhs with doubled capacity
     */
@@ -119,7 +119,7 @@ private:
     void clearNodes();
 
     /*
-        finds a necessary poosition
+        finds a necessary poosition of element
         otherwise returns -1
     */
     int findPos(const element &e) const;
