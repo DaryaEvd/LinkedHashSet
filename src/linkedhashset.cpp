@@ -59,11 +59,11 @@ void linkedhs::print() {
     }
 }
 
-linkedhs::linkedhs() : linkedhs(1) {}
+linkedhs::linkedhs() : linkedhs(DEFAULT_VECTOR_CAPACITY_) {}
 
-linkedhs::linkedhs(size_t number)
-    : vect_(DEFAULT_VECTOR_CAPACITY_ * number),
-      existElem_(DEFAULT_VECTOR_CAPACITY_ * number), head_(nullptr),
+linkedhs::linkedhs(size_t capacity)
+    : vect_(capacity),
+      existElem_(capacity), head_(nullptr),
       tail_(nullptr), insertedElements_(0) {}
 
 linkedhs::~linkedhs() { clearNodes(); }
@@ -74,13 +74,14 @@ void linkedhs::clearNodes() {
         head_ = head_->next;
         delete tmp;
     }
-    vect_.resize(DEFAULT_VECTOR_CAPACITY_);
-    existElem_.resize(DEFAULT_VECTOR_CAPACITY_);
 }
 
 void linkedhs::clear() {
 
     clearNodes();
+
+    std::vector<node *>(DEFAULT_VECTOR_CAPACITY_).swap(vect_);
+    std::vector<bool>(DEFAULT_VECTOR_CAPACITY_).swap(existElem_);
 
     head_ = nullptr;
     tail_ = nullptr;
@@ -103,7 +104,7 @@ bool linkedhs::operator!=(const linkedhs &other) const {
     return !(*this == other);
 }
 
-linkedhs::linkedhs(const linkedhs &other) : linkedhs(1) {
+linkedhs::linkedhs(const linkedhs &other) : linkedhs(DEFAULT_VECTOR_CAPACITY_) {
     for (auto it = other.begin(); it != other.end(); it++) {
         insert(*it);
     }
